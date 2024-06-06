@@ -17,7 +17,7 @@
     width: 100%;
     max-width: 540px;
     background: #fff;
-    margin: 100px auto 20px;
+    margin: 50px auto 20px;
     padding: 40px 30px 70px;
     border-radius: 10px;
 }
@@ -25,13 +25,12 @@
 .todo-app h2 {
     color: #002765;
     display: flex;
-    align-items: center;
     margin-bottom: 20px;
     font-size: 40px;
 }
 
 .todo-app h2 img {
-    width: 80px;
+    width: 60px;
     margin-left: auto;
 }
 
@@ -87,6 +86,9 @@ ul li::before {
     left: 8px;
 }
 
+ul li.in-progress::before {
+    background-image: url("../img/loading.png");
+}
 
 ul li.checked {
     color: #555;
