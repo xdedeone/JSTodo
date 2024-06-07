@@ -117,7 +117,7 @@ ul li::before {
 
 ul li.in-progress::before {
     background-image: url("../img/loading.png");
-    animation: task 5.5s infinite;
+    animation: task 6s infinite;
 }
 
 @keyframes task {
