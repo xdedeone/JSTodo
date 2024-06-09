@@ -148,3 +148,7 @@ ul li span:hover {
     background: #edeef0;
     width: 30px;
 }
+
+.hidden {
+    display: none;
+}
