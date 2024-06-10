@@ -4,13 +4,14 @@ const listContainer = document.getElementById("list-container");
 const categoryTags = document.getElementById("category-tags");
 //CREATION
 function newTag() {
-    document.querySelector(".selected").classList.remove("selected");
     let button = document.createElement("button");
-    button.setAttribute("class", "tablink selected")
+    button.setAttribute("class", "tablink")
     let categoryName = prompt("Tag Name")
     if (categoryName == "" || !categoryName)
         return
     else {
+        document.querySelector(".selected").classList.remove("selected");
+        button.classList.add("selected");
         button.innerHTML = categoryName.toUpperCase();
         categoryTags.append(button);
     }
@@ -63,34 +64,23 @@ function filterTag(target) {
 }
 
 function selectTab(e) {
-    let selectedTag = document.querySelector(".selected");
-    selectedTag.classList.remove("selected");
-    e.target.classList.add("selected");
-    filterTag(e.target);
+    if(e.target.classList.contains("tablink")) {
+        let selectedTag = document.querySelector(".selected");
+        selectedTag.classList.remove("selected");
+        e.target.classList.add("selected");
+        filterTag(e.target);
+    }
 }
 //EVENTS
-function longPressed(e) {
-    window.addEventListener('click', captureClick, true);
-    confirm("You want to delete this TAG?") ? e.target.remove() : 0;
-    saveData();
-}
+categoryTags.addEventListener("click", function(e) {
+    selectTab(e);
+}, false);
 
-function captureClick(e) {
-    e.stopPropagation();
-    window.removeEventListener('click', captureClick, true);
-}
+categoryTags.addEventListener("mousedown", function(e) {
+    pressTimer = window.setTimeout(() => longPressed(e), 1000) });
 
-function setEvents() {
-    tagButtons = document.querySelectorAll(".tablink");
-    for (let i = 1; i < tagButtons.length; i++) {
-        tagButtons[i].addEventListener("mousedown", function(e) {
-            pressTimer = window.setTimeout(() => longPressed(e), 1000) });
-        tagButtons[i].addEventListener("mouseup", function() {
-            clearTimeout(pressTimer) });
-        tagButtons[i].addEventListener("click", function(e) {
-            selectTab(e) });
-    };
-}
+categoryTags.addEventListener("mouseup", function() {
+    clearTimeout(pressTimer) });
 
 listContainer.addEventListener("click", function(e) {
     let inProgressTasks = listContainer.querySelectorAll(".in-progress");
@@ -115,6 +105,18 @@ listContainer.addEventListener("click", function(e) {
 
     saveData();
 }, false);
+
+function longPressed(e) {
+    window.addEventListener('click', captureClick, true);
+    if(e.target.id !== "all")
+        confirm("You want to delete this TAG?") ? e.target.remove() : 0;
+    saveData();
+}
+
+function captureClick(e) {
+    e.stopPropagation();
+    window.removeEventListener('click', captureClick, true);
+}
 //MISC
 function saveData() {
     localStorage.setItem("taskData", listContainer.innerHTML);
@@ -126,7 +128,6 @@ function loadData() {
     let tagData = localStorage.getItem("tagData");
     taskData ? listContainer.innerHTML = taskData : null;
     tagData ? categoryTags.innerHTML = tagData : null,
-    setEvents();
     clearTags();
 }
 loadData();
