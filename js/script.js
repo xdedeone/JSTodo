@@ -2,6 +2,7 @@
 const inputBox = document.getElementById("input-box");
 const listContainer = document.getElementById("list-container");
 const categoryTags = document.getElementById("category-tags");
+let todoTags = [];
 //CREATION
 function newTag() {
     let button = document.createElement("button");
@@ -15,7 +16,6 @@ function newTag() {
         button.innerHTML = categoryName.toUpperCase();
         categoryTags.append(button);
     }
-    setEvents();
     saveData();
 }
 
@@ -31,11 +31,16 @@ function addTask() {
         lastChild ? lastChild.after(li) : listContainer.prepend(li);
         let span = document.createElement("span");
         li.appendChild(span);
-        li.classList.add(selectedTag.innerHTML.replaceAll(" ", "").toLowerCase());
+        tag = selectedTag.innerHTML.replaceAll(" ", "").toLowerCase();
+        li.classList.add(tag);
         let img = document.createElement("img");
         img.setAttribute("src", "img/edit.png");
-        img.setAttribute("width", "28");
+        img.setAttribute("width", "25");
         span.appendChild(img);
+        let p = document.createElement("p");
+        p.setAttribute("class", "tag")
+        p.innerHTML = selectedTag.innerHTML;
+        li.appendChild(p);
     }
     inputBox.value = "";
     saveData();
@@ -43,11 +48,24 @@ function addTask() {
 //FUNCTIONS
 function clearTags() {
     let allTag = document.getElementById("all");
-    document.querySelector(".selected").classList.remove("selected");
+    let getSelected = document.querySelector(".selected");
+    categoryTags.querySelectorAll(".tablink").forEach(t => {
+        tag = t.innerHTML.replaceAll(" ", "").toLowerCase();
+        if(todoTags.includes(tag))
+            return;
+        else
+            todoTags.push(tag);
+    });
+    if(getSelected)
+        getSelected.classList.remove("selected");
     allTag.classList.add("selected");
     let list = listContainer.getElementsByTagName("li");
     for (let i = 0; i < list.length; i++) {
-        list[i].classList.remove("hidden"); 
+        list[i].classList.remove("hidden");
+        if(!todoTags.includes(list[i].classList[0])) {
+            list[i].classList.replace(list[i].classList[0], "all"); 
+            list[i].querySelector("p").innerHTML = "ALL";
+        }
     }
 }
 
@@ -56,15 +74,15 @@ function filterTag(target) {
     let list = listContainer.getElementsByTagName("li");
     for (let i = 0; i < list.length; i++) {
         if(list[i].classList.contains(tag))
-            list[i].classList.remove("hidden")
+            list[i].classList.remove("hidden");
         else
-            list[i].classList.add("hidden")
+            list[i].classList.add("hidden");
     }
     saveData();
 }
 
 function selectTab(e) {
-    if(e.target.classList.contains("tablink")) {
+    if(e.target.classList.contains("tablink") && e.target.id !== "all") {
         let selectedTag = document.querySelector(".selected");
         selectedTag.classList.remove("selected");
         e.target.classList.add("selected");
@@ -108,8 +126,16 @@ listContainer.addEventListener("click", function(e) {
 
 function longPressed(e) {
     window.addEventListener('click', captureClick, true);
-    if(e.target.id !== "all")
-        confirm("You want to delete this TAG?") ? e.target.remove() : 0;
+    let deleteTag;
+    if(e.target.id !== "all") {
+        deleteTag = confirm("You want to delete this TAG?");
+        tag = e.target.innerHTML.replaceAll(" ", "").toLowerCase();
+        if(deleteTag) {
+            todoTags.pop(tag);
+            e.target.remove();
+            clearTags();
+        }
+    }
     saveData();
 }
 
